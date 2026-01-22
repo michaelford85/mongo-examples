@@ -20,6 +20,13 @@ Focus is placed on the following technologies:
 > For advanced multi-tool reasoning and agent-driven workflows, see the MCP examples in `mcpclient/`.
 
 ---
+## 0. Prerequisites
+
+- A MongoDB Atlas cluster with:
+  - A database user with appropriate rights
+  - an IP Access list that allows a connection from your local machine
+  - The [Sample AirBnB Listings Dataset](https://www.mongodb.com/docs/atlas/sample-data/sample-airbnb/) loaded
+
 ## 1. Install pyenv
 
 ### macOS
@@ -77,9 +84,9 @@ echo 'eval "$(pyenv init -)"' >> ~/.bashrc
 source ~/.bashrc
 ```
 
-## 2. Install Python 3.12
+## 2. Install Python 3.12.7
 
-- Why Python 3.12?
+- Why Python 3.12.7?
   - Required for modern MCP tooling
   - Better async performance
   - Improved typing and error messages
@@ -87,19 +94,19 @@ source ~/.bashrc
 
 - Once pyenv is installed:
 ```
-pyenv install 3.12.0
+pyenv install 3.12.7
 ```
 
 - Set it locally for the repository:
 ```
 cd mongo-examples
-pyenv local 3.12.0
+pyenv local 3.12.7
 ```
 
 - Verify:
 ```
 python --version
-# Python 3.12.0
+# Python 3.12.7
 ```
 
 ## 3. Setup a Python Environment
@@ -130,7 +137,7 @@ MONGODB_DB = "sample_airbnb"
 MONGODB_COLLECTION = "listingsAndReviews"
 
 VOYAGE_API_KEY = "<your-voyage-api-key>"
-VOYAGE_MODEL = "voyage-2"  # or voyage-large-2
+VOYAGE_MODEL = "voyage-4"  # or voyage-4-large
 ```
 
 ---
@@ -192,72 +199,93 @@ vectorizer.process_documents(limit=1000)
 
 ---
 
-## 7. MCP + Claude Desktop Integration (Optional)
+## 5. Run the Search and Query System
 
-This project supports **MCP (Model Context Protocol)** so Claude Desktop can invoke your vector search pipeline as a tool.
-
-### MCP Bridge Example
-
-```python
-@mcp.tool()
-def airbnb_search(payload: dict) -> dict:
-    url = f"{UPSTREAM}/vectorize"
-    r = httpx.post(url, json=payload, headers=_headers())
-    r.raise_for_status()
-    return r.json()
-```
-
-### Claude `config.json`
-
-```json
-{
-  "mcpServers": {
-    "mongodb-vector-mcp-airbnb": {
-      "command": "/path/to/python",
-      "args": ["/path/to/mcp_bridge_airbnb.py"],
-      "env": {
-        "UPSTREAM_BASE_URL": "http://127.0.0.1:8000",
-        "AUTH_TOKEN": "<JWT>"
-      }
-    }
-  }
-}
-```
-
-Once connected, Claude can call:
+Use the `searchairbnb.py` script to perform vector searches and interact with the LLM using your embedded Airbnb dataset:
 
 ```
-Use the AirbnbSearch tool to vectorize:
-"pet-friendly apartments in Logan Square under $250/night"
+# Activate your virtual environment
+source .venv/bin/activate
+
+# Run the search script
+python searchairbnb.py
 ```
 
----
+### What the Script Does
+The `searchairbnb.py` script provides a Retrieval-Augmented Generation (RAG) system that:
+1) **Vector Search**: Converts your questions into embeddings and finds similar Airbnb listings
+2) **Metadata Filtering**: Applies filters based on your query (country, market, beds, bedrooms, listing ID)
+3) **LLM Integration**: Uses OpenAI's `gpt-4o-mini` model (or another model specified by `settings.OPENAI_MODEL`) to generate natural language responses
+4) **Conversation History**: Maintains context across multiple questions in a session
 
-## 8. Why VoyageAI?
+### Query Examples
 
-- High-quality embeddings optimized for retrieval
-- Predictable dimensionality
-- Simple API (no cloud IAM or credential sprawl)
-- Ideal for MongoDB Atlas Vector Search
+**Basic Questions**
+```
+Question: What are some beachfront properties?
+Question: Show me listings with great reviews
+Question: Find properties good for families
+```
+**Filtered Searches**
+```
+Question: country=US,show me properties in New York
+Question: market=Paris,beds=2,find apartments for couples
+Question: bedrooms=3,country=AU,what's available in Sydney?
+Question: id=12345678,show me details for this specific listing
+```
+**Direct Claude Queries**
+```
+Question: ask what makes a good Airbnb host?
+Question: ask explain the difference between entire home and private room
+```
+### Filter Options
+The system automatically detects and applies these filters from your questions:
+- `country=XX` - Filter by country code (e.g., US, FR, AU)
+- `market=CityName` - Filter by market/city
+- `beds=N` - Filter by number of beds
+- `bedrooms=N` - Filter by number of bedrooms
+- `id=XXXXXXXX` - Get specific listing by ID (skips vector search)
 
----
+### Sample Session
+```
+Enter questions (Press Ctrl+C to stop):
+Commands:
+  ask <question> - Direct Claude query without vector search
+  <question> - Full query with vector search and Claude (classic RAG)
+  clear - Clear conversation history
 
-## 9. Next Steps
+Question: country=US,beds=2,show me properties in beach locations
+Answer: Based on the search results, here are some great 2-bed beachfront properties in the US...
 
-- Add metadata-aware hybrid search (vector + filters)
-- Store embeddings in a separate collection
-- Add re-ranking or score thresholds
-- Introduce multi-tool MCP chains (vectorize → search → summarize)
+Question: What about the pricing for these properties?
+Answer: Looking at the properties from your previous search, the pricing varies...
 
----
+Question: ask what should I look for when booking an Airbnb?
+Answer: When booking an Airbnb, here are the key factors to consider...
 
-## Summary
+Question: clear
+Answer: history cleared...
+```
 
-This refactor modernizes the original RAG example by:
+### Performance Features
+- Timing Information: The script displays processing times for each operation
+- Smart Filtering: Automatically optimizes search based on detected filters
+- History Management: Automatically trims conversation history to prevent token overflow
+- Error Handling: Gracefully handles AWS token expiration and validation errors
 
-- ❌ Removing AWS / Bedrock
-- ✅ Using VoyageAI for embeddings
-- ✅ Aligning with MCP + Claude Desktop
-- ✅ Keeping MongoDB Atlas at the center
 
-You now have a clean, composable vector search foundation that works equally well for scripts, APIs, and agent-based workflows.
+### Customization Options
+You can modify the search behavior by editing these parameters in the `retrieve_aggregate_facts()` method:
+```
+limit = 5      # Maximum results to return (default: 5)
+candidates = 400  # Number of candidates to evaluate (default: 400)
+```
+
+### Troubleshooting
+- Too Much History: The system automatically clears history when token limits are reached.
+- No Results: Try broader search terms or remove filters.
+- Connection Issues: Verify your MongoDB URI in settings.py.
+
+### Exit the Program
+Press `Ctrl+C` to stop the interactive session.
+
