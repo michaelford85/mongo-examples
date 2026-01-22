@@ -1,26 +1,26 @@
 # MongoDB Examples with AI, Vector Search, and MCP
 
-This repository contains **multiple complementary projects** demonstrating how to integrate **MongoDB Atlas**, **vector search**, **AWS Bedrock**, and the **Model Context Protocol (MCP)**—including **local MCP clients**, **containerized MCP servers**, and **Claude Desktop integration**.
+The goal of this repository is to show **end‑to‑end agentic workflows**, where *clients (Claude Desktop, Python MCP clients)* can interact with *one or more MCP servers* that expose MongoDB‑backed tools.
 
-The goal of this repo has evolved beyond simple demos: it now shows **end‑to‑end agentic workflows**, where *clients (Claude Desktop, Python MCP clients)* can interact with *one or more MCP servers* that expose MongoDB‑backed tools.
+This repository contains **multiple complementary projects** demonstrating how to integrate **MongoDB Atlas**, **VoyageAI vector search**, **AWS Bedrock**, and the **Model Context Protocol (MCP)**—including **local MCP clients**, **containerized MCP servers**, and **Claude Desktop integration**.
 
 ---
 
 ## Repository Structure
 
-### `jsonembed/`
+### [jsonembed/](./jsonembed/)
 **Document Embedding and Vectorization**
 
-A Python application that processes MongoDB documents, generates AI embeddings using **AWS Bedrock**, and stores vector representations for semantic search.
+A Python application that processes MongoDB documents, generates AI embeddings using **VoyageAI Embedding Models**, and stores vector representations for semantic search.
 
 - Document chunking and text extraction
-- AWS Bedrock Titan embeddings
+- VoyageAI embeddings
 - Batch processing of MongoDB collections
 - MongoDB Atlas Vector Search storage
 
 ---
 
-### `MongoMCP/`
+### [MongoMCP/](./MongoMCP/)
 **MongoDB MCP Server (Core Runtime)**
 
 A FastAPI‑based **MCP server** that exposes MongoDB functionality as MCP tools. This server is the backbone for both local development and containerized deployments.
@@ -36,7 +36,7 @@ This server is what ultimately powers tools like **AirbnbSearch**.
 
 ---
 
-### `mcpclient/`
+### [mcpclient/](./mcpclient/)
 **MCP Clients & Bridges (Claude / Local)**
 
 This directory now serves **two distinct roles**:
@@ -88,7 +88,6 @@ This enables:
 
 - **Python 3.10–3.12** (Python 3.13 is *not* recommended for some dependencies)
 - MongoDB Atlas cluster (sample Airbnb dataset)
-- AWS account with Bedrock access
 - Docker or Podman (for containerized MCP server)
 - Claude Desktop (paid plan required for MCP tools)
 
@@ -103,10 +102,10 @@ podman run --rm -p 8000:8000 \
   -e MCP_TOOL_NAME=AirbnbSearch \
   -e MONGO_CREDS=mford_study_cluster_creds \
   -e AWS_REGION=us-east-2 \
-  -e AWS_PROFILE="Solution-Architects.User-979559056307" \
+  -e AWS_PROFILE="Solution-Architects.User-xxxxxxxxxxxx" \
   -e AWS_SDK_LOAD_CONFIG=1 \
   -v $HOME/.aws:/root/.aws \
-  979559056307.dkr.ecr.us-east-2.amazonaws.com/mongodb-vector-mcp:latest
+  xxxxxxxxxxxx.dkr.ecr.us-east-2.amazonaws.com/mongodb-vector-mcp:latest
 ```
 
 Once running, verify:
