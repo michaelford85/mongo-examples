@@ -24,7 +24,7 @@ Focus is placed on the following technologies:
 
 - A MongoDB Atlas cluster with:
   - A database user with appropriate rights
-  - an IP Access list that allows a connection from your local machine
+  - an [IP Access list](https://www.mongodb.com/docs/atlas/security/ip-access-list/) that allows a connection from your local machine
   - The [Sample AirBnB Listings Dataset](https://www.mongodb.com/docs/atlas/sample-data/sample-airbnb/) loaded
 
 ## 1. Install pyenv
