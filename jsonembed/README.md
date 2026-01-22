@@ -116,17 +116,9 @@ pip install -r requirements.txt
 python -c "import sys; print(sys.version)"
 ```
 
-## 4. Python Environment Setup
-
-```bash
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-```
-
 ---
 
-## 5. Configuration (`settings.py`)
+## 4. Configuration (`settings.py`)
 
 Update `settings.py` with **MongoDB Atlas** and **VoyageAI** credentials:
 
@@ -143,7 +135,7 @@ VOYAGE_MODEL = "voyage-2"  # or voyage-large-2
 
 ---
 
-## 6. Create the Vector Index
+## 5. Create the Vector Index
 
 Create a **MongoDB Atlas Vector Search index** on the target collection.
 
@@ -171,7 +163,7 @@ Create a **MongoDB Atlas Vector Search index** on the target collection.
 
 ---
 
-## 7. Generate Embeddings
+## 6. Generate Embeddings
 
 Run the embedding script:
 
@@ -200,7 +192,7 @@ vectorizer.process_documents(limit=1000)
 
 ---
 
-## 8. MCP + Claude Desktop Integration (Optional)
+## 7. MCP + Claude Desktop Integration (Optional)
 
 This project supports **MCP (Model Context Protocol)** so Claude Desktop can invoke your vector search pipeline as a tool.
 
@@ -241,7 +233,7 @@ Use the AirbnbSearch tool to vectorize:
 
 ---
 
-## 9. Why VoyageAI?
+## 8. Why VoyageAI?
 
 - High-quality embeddings optimized for retrieval
 - Predictable dimensionality
@@ -250,7 +242,7 @@ Use the AirbnbSearch tool to vectorize:
 
 ---
 
-## 10. Next Steps
+## 9. Next Steps
 
 - Add metadata-aware hybrid search (vector + filters)
 - Store embeddings in a separate collection
