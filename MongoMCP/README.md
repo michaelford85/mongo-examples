@@ -3,7 +3,7 @@
 A configurable **Model Context Protocol (MCP)** server that dynamically loads tool definitions from MongoDB (no code changes required to add/modify tools). This repo also includes an example **MCP “bridge”** you can register in **Claude Desktop** to call your MCP server from Claude.
 
 > This README intentionally **does not use AWS** (no Secrets Manager / ECR / EKS).  
-> Container build/push uses **Podman** and **quay.io**.
+> Container build/push uses **Podman** and **docker.io**.
 
 ---
 
@@ -274,16 +274,16 @@ podman run --rm -p 8000:8000 \
 
 ---
 
-## 5) Push to quay.io
+## 5) Push to docker.io
 
 ### 5.1 Login
 ```bash
-podman login quay.io
+podman login docker.io
 ```
 
 ### 5.2 Tag
 ```bash
-export QUAY_REPO="quay.io/<your-username>/mongodb-vector-mcp"
+export QUAY_REPO="docker.io/<your-username>/mongodb-vector-mcp"
 podman tag mongodb-vector-mcp:latest "${QUAY_REPO}:latest"
 ```
 
@@ -385,5 +385,5 @@ You should see your bridge tool(s) (e.g. `airbnb_search`) become available.
 ## What changed vs the original README
 
 - Removed AWS-specific setup (`AWS_REGION`, `MONGO_CREDS`, ECR, EKS/Terraform). fileciteturn13file0L16-L23
-- Switched container workflow from **Docker** to **Podman** and registry from **ECR** to **quay.io**. fileciteturn13file0L45-L73
+- Switched container workflow from **Docker** to **Podman** and registry from **ECR** to **docker.io**. fileciteturn13file0L45-L73
 - Added a practical **Claude Desktop MCP bridge** flow (how Claude actually discovers tools).
