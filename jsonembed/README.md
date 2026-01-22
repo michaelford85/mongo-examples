@@ -1,8 +1,8 @@
-# MongoDB Vector Search with VoyageAI (Airbnb Example)
+# MongoDB Vector Search with VoyageAI and RAG (Airbnb Example)
 
 This repository demonstrates how to build a **MongoDB Atlas Vector Search** pipeline using the Airbnb sample dataset, powered by **VoyageAI embeddings**.
 
-This refactor removes **AWS / Bedrock entirely** and focuses on:
+Focus is placed on the following technologies:
 
 - MongoDB Atlas Vector Search
 - VoyageAI embedding models
@@ -20,8 +20,103 @@ This refactor removes **AWS / Bedrock entirely** and focuses on:
 > For advanced multi-tool reasoning and agent-driven workflows, see the MCP examples in `mcpclient/`.
 
 ---
+## 1. Install pyenv
 
-## 1. Python Environment Setup
+### macOS
+```
+brew update
+brew install pyenv
+```
+- Add pyenv to your shell:
+
+zsh (default on MacOS):
+```
+echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.zshrc
+echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.zshrc
+echo 'eval "$(pyenv init -)"' >> ~/.zshrc
+```
+
+- Reload your shell:
+```
+source ~/.zshrc
+```
+### Ubuntu Linux
+
+- Install dependencies:
+```
+sudo apt update
+sudo apt install -y \
+  build-essential \
+  curl \
+  git \
+  libssl-dev \
+  zlib1g-dev \
+  libbz2-dev \
+  libreadline-dev \
+  libsqlite3-dev \
+  libffi-dev \
+  liblzma-dev \
+  tk-dev \
+  xz-utils \
+  ca-certificates
+```
+- Install pyenv:
+```
+curl https://pyenv.run | bash
+```
+
+- Add pyenv to your shell (bash):
+```
+echo 'export PYENV_ROOT="$HOME/.pyenv"' >> ~/.bashrc
+echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >> ~/.bashrc
+echo 'eval "$(pyenv init -)"' >> ~/.bashrc
+```
+
+- Reload:
+```
+source ~/.bashrc
+```
+
+## 2. Install Python 3.12
+
+- Why Python 3.12?
+  - Required for modern MCP tooling
+  - Better async performance
+  - Improved typing and error messages
+  - Matches Claude Desktop MCP client expectations
+
+- Once pyenv is installed:
+```
+pyenv install 3.12.0
+```
+
+- Set it locally for the repository:
+```
+cd mongo-examples
+pyenv local 3.12.0
+```
+
+- Verify:
+```
+python --version
+# Python 3.12.0
+```
+
+## 3. Setup a Python Environment
+
+```bash
+python3 -m venv .venv #or specify a path to the desired venv directory
+source venv/bin/activate
+pip install --upgrade pip setuptools wheel
+pip install -r requirements.txt
+```
+
+- Confirm Environment (Optional but Recommended)
+```
+python -c "import sys; print(sys.version)"
+```
+
+## 4. Python Environment Setup
 
 ```bash
 python3 -m venv venv
@@ -31,7 +126,7 @@ pip install -r requirements.txt
 
 ---
 
-## 2. Configuration (`settings.py`)
+## 5. Configuration (`settings.py`)
 
 Update `settings.py` with **MongoDB Atlas** and **VoyageAI** credentials:
 
@@ -48,7 +143,7 @@ VOYAGE_MODEL = "voyage-2"  # or voyage-large-2
 
 ---
 
-## 3. Create the Vector Index
+## 6. Create the Vector Index
 
 Create a **MongoDB Atlas Vector Search index** on the target collection.
 
@@ -76,7 +171,7 @@ Create a **MongoDB Atlas Vector Search index** on the target collection.
 
 ---
 
-## 4. Generate Embeddings
+## 7. Generate Embeddings
 
 Run the embedding script:
 
@@ -105,7 +200,7 @@ vectorizer.process_documents(limit=1000)
 
 ---
 
-## 5. MCP + Claude Desktop Integration (Optional)
+## 8. MCP + Claude Desktop Integration (Optional)
 
 This project supports **MCP (Model Context Protocol)** so Claude Desktop can invoke your vector search pipeline as a tool.
 
@@ -146,7 +241,7 @@ Use the AirbnbSearch tool to vectorize:
 
 ---
 
-## 6. Why VoyageAI?
+## 9. Why VoyageAI?
 
 - High-quality embeddings optimized for retrieval
 - Predictable dimensionality
@@ -155,7 +250,7 @@ Use the AirbnbSearch tool to vectorize:
 
 ---
 
-## 7. Next Steps
+## 10. Next Steps
 
 - Add metadata-aware hybrid search (vector + filters)
 - Store embeddings in a separate collection
