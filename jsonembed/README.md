@@ -13,9 +13,10 @@ Focus is placed on the following technologies:
 
 ## Repository Overview
 
-- **`embedairbnb.py`** – Generates vector embeddings using VoyageAI and stores them in MongoDB
+- **`embed-collection.py`** – Generates vector embeddings using VoyageAI and stores them in MongoDB
+- **`remove-embeddings.py`** – removes vector embeddings using VoyageAI and stores them in MongoDB
 - **`settings.py`** – Centralized configuration (MongoDB + VoyageAI)
-- **`mcpclient/`** – MCP bridge examples for Claude Desktop integration
+- **`search-collection.py`** - Provides an interactive RAG system with vector search and LLM integration
 
 > For advanced multi-tool reasoning and agent-driven workflows, see the MCP examples in `mcpclient/`.
 
@@ -133,7 +134,7 @@ Update `settings.py` with **MongoDB Atlas** and **VoyageAI** credentials:
 # settings.py
 
 # mongo settings
-MONGODB_URI = "mongodb+srv://<username>:<password>@<cluster-url>/sample_airbnb"
+MONGODB_URI = "mongodb+srv://<username>:<password>@<cluster-url>"
 MONGODB_DB = "sample_airbnb"
 MONGODB_COLLECTION = "listingsAndReviews"
 VECTOR_INDEX_NAME = "listing_vector_index"
@@ -186,12 +187,12 @@ Run the embedding script:
 
 ```bash
 source venv/bin/activate
-python embedairbnb.py
+python embed-collection.py
 ```
 
-### What `embedairbnb.py` Does
+### What `embed-collection.py` Does
 
-1. Reads Airbnb documents from MongoDB
+1. Reads specified collection documents from MongoDB
 2. Extracts semantically useful fields (name, summary, description, property type, room type, address)
 3. Combines fields into a single text payload per listing
 4. Calls **VoyageAI** to generate embeddings
@@ -211,19 +212,19 @@ vectorizer.process_documents(limit=1000)
 
 ## 5. Run the Search and Query System
 
-Use the `searchairbnb.py` script to perform vector searches and interact with the LLM using your embedded Airbnb dataset:
+Use the `search-collection.py` script to perform vector searches and interact with the LLM using your embedded collection dataset:
 
 ```
 # Activate your virtual environment
 source .venv/bin/activate
 
 # Run the search script
-python searchairbnb.py
+python search-collection.py
 ```
 
 ### What the Script Does
-The `searchairbnb.py` script provides a Retrieval-Augmented Generation (RAG) system that:
-1) **Vector Search**: Converts your questions into embeddings and finds similar Airbnb listings
+The `search-collection.py` script provides a Retrieval-Augmented Generation (RAG) system that:
+1) **Vector Search**: Converts your questions into embeddings and finds similar Airbnb listings (assuming your specified collection is the`listingsAndReviews`one)
 2) **Metadata Filtering**: Applies filters based on your query (country, market, beds, bedrooms, listing ID)
 3) **LLM Integration**: Uses OpenAI's `gpt-4o-mini` model (or another model specified by `settings.OPENAI_MODEL`) to generate natural language responses
 4) **Conversation History**: Maintains context across multiple questions in a session
