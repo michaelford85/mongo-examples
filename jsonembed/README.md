@@ -132,12 +132,22 @@ Update `settings.py` with **MongoDB Atlas** and **VoyageAI** credentials:
 ```python
 # settings.py
 
+# mongo settings
 MONGODB_URI = "mongodb+srv://<username>:<password>@<cluster-url>/sample_airbnb"
 MONGODB_DB = "sample_airbnb"
 MONGODB_COLLECTION = "listingsAndReviews"
+VECTOR_INDEX_NAME = "listing_vector_index"
+BATCH_SIZE = 100
+LIMIT = 10000
 
+# VoyageAI settings
 VOYAGE_API_KEY = "<your-voyage-api-key>"
 VOYAGE_MODEL = "voyage-4"  # or voyage-4-large
+NUM_DIMENSIONS = 1024
+
+# OpenAI settings
+OPENAI_API_KEY = "<your-openai-api-key>"
+OPENAI_MODEL = "gpt-4o-mini"  # optional override
 ```
 
 ---
